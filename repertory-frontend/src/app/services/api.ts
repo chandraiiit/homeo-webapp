@@ -1,14 +1,25 @@
 import axios from 'axios';
+import keycloak from '../lib/keycloak';
 
 // ─── Axios Instance ───────────────────────────────────────────────────────────
 
 export const http = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000',
-  headers: { 
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming the token is stored in localStorage
-  },
+  headers: { 'Content-Type': 'application/json' },
   timeout: 10_000,
+});
+
+// 🔐 Attach token automatically
+http.interceptors.request.use(async (config) => {
+  if (keycloak.authenticated) {
+    try {
+      await keycloak.updateToken(30);
+      config.headers.Authorization = `Bearer ${keycloak.token}`;
+    } catch (err) {
+      keycloak.logout();
+    }
+  }
+  return config;
 });
 
 // ─── Types ────────────────────────────────────────────────────────────────────
