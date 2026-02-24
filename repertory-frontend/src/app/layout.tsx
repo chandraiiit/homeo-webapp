@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Providers } from './components/Providers';
+import AuthProvider from './providers/AuthProvider';
 
 export const metadata: Metadata = {
   title: 'Homeo MVP – Repertorization Engine',
@@ -15,7 +16,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <AuthProvider><Providers>{children}</Providers></AuthProvider>
+        
       </body>
     </html>
   );

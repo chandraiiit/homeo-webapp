@@ -4,7 +4,10 @@ import axios from 'axios';
 
 export const http = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000',
-  headers: { 'Content-Type': 'application/json' },
+  headers: { 
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming the token is stored in localStorage
+  },
   timeout: 10_000,
 });
 
