@@ -45,6 +45,20 @@ export interface RemedyResult {
   matchedRubricCount: number;
 }
 
+// API response shapes for analysis endpoint
+interface AnalysisApiResult {
+  remedyId: number;
+  remedy: string;
+  totalScore: number;
+  matchedRubrics: number;
+  confidence: number;
+}
+
+interface AnalysisResponse {
+  selectedRubrics: number;
+  results: AnalysisApiResult[];
+}
+
 // ─── API ──────────────────────────────────────────────────────────────────────
 
 export const api = {
@@ -81,7 +95,17 @@ export const api = {
   analysis: {
     repertorize: (rubricIds: number[]) =>
       http
-        .post<RemedyResult[]>('/analysis', { rubricIds })
-        .then((r) => r.data),
+        .post<AnalysisResponse>('/analysis', { rubricIds })
+        .then((r) =>
+          // map the API's result shape to our `RemedyResult` shape
+          r.data.results.map((it) => ({
+            remedyId: it.remedyId,
+            name: it.remedy,
+            abbreviation: '',
+            score: it.totalScore,
+            grades: [],
+            matchedRubricCount: it.matchedRubrics,
+          }))
+        ),
   },
 };
